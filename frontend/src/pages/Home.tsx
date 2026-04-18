@@ -6,7 +6,8 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
+import type { MouseEvent } from "react";
 import FilterBar from "../components/FilterBar";
 import FloatingPopup from "../components/AbillitiesPopup";
 
@@ -16,12 +17,30 @@ type Filters = {
   type?: string;
 };
 
+type CardForeignName = {
+  language: string;
+  imageUrl?: string;
+};
+
+type Card = {
+  id: string;
+  imageUrl?: string;
+  text?: string;
+  foreignNames?: CardForeignName[];
+};
+
+type CardsResponse = {
+  cards?: Card[];
+};
+
 export default function Home() {
-  const [cards, setCards] = useState<any[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(100);
   const [filters, setFilters] = useState<Filters>({});
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupAnchorEl, setPopupAnchorEl] = useState<HTMLElement | null>(null);
+  const [selectedCardText, setSelectedCardText] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -40,14 +59,14 @@ export default function Home() {
   };
 
 
-  const handleApplyFilters = (newFilters: any) => {
+  const handleApplyFilters = (newFilters: Filters) => {
     setPage(1);
     setCards([]);
     setHasMore(true);
     setFilters(newFilters);
   };
 
-  const fetchData = async () => {
+  const fetchData = useEffectEvent(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -61,23 +80,42 @@ export default function Home() {
 
       if (!response.ok) return;
 
-      const data = await response.json();
+      const data: CardsResponse = await response.json();
+      const nextCards = data.cards ?? [];
 
-      if (!data?.cards || data.cards.length === 0) {
+      if (nextCards.length === 0) {
         setHasMore(false); // 🛑 stop here
         return;
       }
 
-      setCards((prev) => [...prev, ...data.cards]);
+      setCards((prev) => [...prev, ...nextCards]);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  });
+
+  const handleCardClick = (event: MouseEvent<HTMLElement>, card: Card) => {
+    setPopupAnchorEl(event.currentTarget);
+    setSelectedCardText(card.text ?? null);
+    setIsPopupOpen(true);
+  };
+
+  const handlePopupOpen = () => {
+    setSelectedCardText(null);
+    setIsPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setIsPopupOpen(false);
+    setPopupAnchorEl(null);
   };
 
   useEffect(() => {
-    fetchData();
+    void Promise.resolve().then(() => {
+      void fetchData();
+    });
   }, [page, filters]);
 
   return (
@@ -87,17 +125,21 @@ export default function Home() {
         {cards.map((value) => {
           if (!value?.imageUrl) return null;
 
-          const foreignNames: any[] = value.foreignNames || [];
+          const foreignNames = value.foreignNames || [];
           const pt = foreignNames.find(
             (lang) => lang.language === "Portuguese (Brazil)"
           );
 
           return (
             <Grid size={2} key={value.id}>
-              <Paper>
+              <Paper
+                onClick={(event) => handleCardClick(event, value)}
+                sx={{ cursor: "pointer", overflow: "hidden" }}
+              >
                 <img
                   src={pt?.imageUrl || value.imageUrl}
                   width="100%"
+                  alt={value.id}
                 />
               </Paper>
             </Grid>
@@ -121,8 +163,10 @@ export default function Home() {
       </Box>
       <FloatingPopup
         open={isPopupOpen}
-        onOpen={() => setIsPopupOpen(true)}
-        onClose={() => setIsPopupOpen(false)}
+        onOpen={handlePopupOpen}
+        onClose={handlePopupClose}
+        anchorEl={popupAnchorEl}
+        selectedCardText={selectedCardText}
       />
 
     </Container>

@@ -20,9 +20,18 @@ const COLORS = [
   { value: "b", label: "Preto" },
 ];
 
+const TYPES = [
+  { value: "creature", label: "Criatura" },
+  { value: "instant", label: "Instantâneo" },
+  { value: "sorcery", label: "Feitiço" },
+  { value: "enchantment", label: "Encantamento" },
+  { value: "artifact", label: "Artefato" },
+]
+
 type Filters = {
   cmc?: string;
   colors?: string;
+  type?: string;
 };
 
 type Props = {
@@ -32,11 +41,13 @@ type Props = {
 export default function FilterBar({ onApply }: Props) {
   const [cmc, setCmc] = useState("");
   const [colors, setColors] = useState<string[]>([]);
+  const [types, setTypes] = useState<string[]>([]);
 
   const handleApply = () => {
     onApply({
       cmc: cmc || undefined,
       colors: colors.length ? colors.join(",") : undefined,
+      type: types.length ? types.join(",") : undefined,
     });
   };
 
@@ -44,6 +55,7 @@ export default function FilterBar({ onApply }: Props) {
     setCmc("");
     setColors([]);
     onApply({});
+    setTypes([]);
   };
 
   return (
@@ -66,7 +78,8 @@ export default function FilterBar({ onApply }: Props) {
           value={cmc}
           onChange={(e) => setCmc(e.target.value)}
           type="number"
-          sx={{ maxWidth: 120 }}
+          size="small"
+          sx={{ width: 100 }}
         />
         <FormControl sx={{ minWidth: 200 }} size="small">
           <InputLabel>Cores</InputLabel>
@@ -90,6 +103,29 @@ export default function FilterBar({ onApply }: Props) {
             ))}
           </Select>
         </FormControl>
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Tipos</InputLabel>
+          <Select
+            multiple
+            value={types}
+            onChange={(e) => setTypes(e.target.value as string[])}
+            input={<OutlinedInput label="Tipos" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                {(selected as string[]).map((value) => (
+                  <Chip key={value} label={TYPES.find((type) => type.value == value)?.label} />
+                ))}
+              </Box>
+            )}
+          >
+            {TYPES.map((type) => (
+              <MenuItem key={type.value} value={type.value}>
+                {type.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
       </Box>
       <Box sx={{ display: "flex", gap: 1.5 }}>
         {/* Buttons */}

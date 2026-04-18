@@ -17,6 +17,8 @@ type FloatingPopupProps = {
   open: boolean;
   onOpen: () => void;
   onClose: () => void;
+  anchorEl?: HTMLElement | null;
+  selectedCardText?: string | null;
 };
 
 type Ability = {
@@ -32,6 +34,8 @@ export default function FloatingPopup({
   open,
   onOpen,
   onClose,
+  anchorEl,
+  selectedCardText,
 }: FloatingPopupProps) {
   const theme = useTheme();
   const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
@@ -47,8 +51,10 @@ export default function FloatingPopup({
     onOpen();
   };
 
+  const activeAnchorEl = anchorEl ?? anchorElement;
+
   useEffect(() => {
-    if (!open) return;
+    if (!open || abilities.length > 0) return;
 
     let cancelled = false;
 
@@ -75,7 +81,7 @@ export default function FloatingPopup({
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, abilities.length]);
 
   const handleClose = () => {
     onClose();
@@ -86,6 +92,23 @@ export default function FloatingPopup({
       currentId === abilityId ? null : abilityId
     );
   };
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const visibleAbilities = selectedCardText
+    ? abilities.filter((ability) => {
+        const possibleNames = ability.name
+          .split("/")
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        return possibleNames.some((name) => {
+          const pattern = new RegExp(`\\b${escapeRegExp(name)}\\b`, "i");
+          return pattern.test(selectedCardText);
+        });
+      })
+    : abilities;
 
   return (
     <>
@@ -106,7 +129,7 @@ export default function FloatingPopup({
 
       <Popover
         open={open}
-        anchorEl={anchorElement}
+        anchorEl={activeAnchorEl}
         disableScrollLock
         onClose={handleClose}
         anchorOrigin={{
@@ -173,7 +196,19 @@ export default function FloatingPopup({
           },
         }}
       >
-        {abilities.map((ability) => {
+        {visibleAbilities.length === 0 ? (
+          <Box
+            sx={{
+              px: 2,
+              py: 3,
+              textAlign: "center",
+              color: "text.secondary",
+            }}
+          >
+            Nenhuma habilidade encontrada no texto desta carta.
+          </Box>
+        ) : (
+        visibleAbilities.map((ability) => {
           const isOpen = expandedAbilityId === ability.id;
 
           return (
@@ -248,7 +283,7 @@ export default function FloatingPopup({
               </Collapse>
             </Box>
           );
-        })}
+        }))}
       </Box>
 
       </Popover>
