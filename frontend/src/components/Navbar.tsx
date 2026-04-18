@@ -16,10 +16,12 @@ type Props = {
 
 export default function Navbar({ toggleTheme, mode }: Props) {
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ maxHeight: "90px" }}>
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Magic The Gathering
+          <Link to="/">
+            <img src="/assets/MTG_White.png" alt="MTG Logo" style={{ height: 70, marginRight: 16, cursor: "pointer" }}/>
+          </Link>
         </Typography>
 
         <Button color="inherit" component={Link} to="/">
