@@ -10,7 +10,4 @@ export class Ability {
 
   @Column()
   description!: string;
-
-  @Column({ nullable: true })
-  amount?: number;
 }

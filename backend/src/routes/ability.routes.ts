@@ -8,9 +8,9 @@ const AbilityRepo = () => AppDataSource.getRepository(Ability);
 
 // CREATE
 router.post("/", async (req, res) => {
-  const { name, description, amount } = req.body;
+  const { name, description } = req.body;
 
-  const Ability = AbilityRepo().create({ name, description, amount });
+  const Ability = AbilityRepo().create({ name, description });
   await AbilityRepo().save(Ability);
 
   return res.json(Ability);

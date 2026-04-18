@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
 import FilterBar from "../components/FilterBar";
-import FloatingPopup from "../components/EffectPopup";
+import FloatingPopup from "../components/AnillitiesPopup";
 
 type Filters = {
   name?: string;
