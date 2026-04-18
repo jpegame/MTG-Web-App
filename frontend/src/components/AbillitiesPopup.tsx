@@ -150,7 +150,7 @@ export default function FloatingPopup({
       >
         <AutoAwesomeIcon sx={{ color: "primary.main" }} />
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-          Abilities
+          Habilidades
         </Typography>
       </Box>
 
