@@ -26,11 +26,21 @@ const TYPES = [
   { value: "sorcery", label: "Feitiço" },
   { value: "enchantment", label: "Encantamento" },
   { value: "artifact", label: "Artefato" },
+  { value: "planeswalker", label: "Planeswalker" },
+  { value: "land", label: "Terreno" },
+  { value: "tribal", label: "Tribal" },
+  { value: "conspiracy", label: "Conspiração" },
+  { value: "phenomenon", label: "Fenômeno" },
+  { value: "plane", label: "Plano" },
+  { value: "scheme", label: "Esquema" },
+  { value: "vanguard", label: "Vanguarda" },
 ]
+
+
 
 type Filters = {
   cmc?: string;
-  colors?: string;
+  colorIdentity?: string;
   type?: string;
 };
 
@@ -46,7 +56,7 @@ export default function FilterBar({ onApply }: Props) {
   const handleApply = () => {
     onApply({
       cmc: cmc || undefined,
-      colors: colors.length ? colors.join(",") : undefined,
+      colorIdentity: colors.length ? colors.join(",") : undefined,
       type: types.length ? types.join(",") : undefined,
     });
   };
