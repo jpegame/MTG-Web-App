@@ -27,7 +27,7 @@ export default function Navbar({ toggleTheme, mode }: Props) {
         </Button>
 
         <Button color="inherit" component={Link} to="/about">
-          About
+          Efeitos
         </Button>
         <IconButton color="inherit" onClick={toggleTheme}>
           {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}

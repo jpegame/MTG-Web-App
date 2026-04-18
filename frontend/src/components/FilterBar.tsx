@@ -57,47 +57,50 @@ export default function FilterBar({ onApply }: Props) {
         gap: 2,
         alignItems: "center",
         flexWrap: "wrap",
+        justifyContent: "space-between",
       }}
     >
-      <TextField
-        label="Custo"
-        value={cmc}
-        onChange={(e) => setCmc(e.target.value)}
-        type="number"
-        sx={{ maxWidth: 120 }}
-      />
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+        <TextField
+          label="Custo"
+          value={cmc}
+          onChange={(e) => setCmc(e.target.value)}
+          type="number"
+          sx={{ maxWidth: 120 }}
+        />
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Cores</InputLabel>
+          <Select
+            multiple
+            value={colors}
+            onChange={(e) => setColors(e.target.value as string[])}
+            input={<OutlinedInput label="Cores" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+                {(selected as string[]).map((value) => (
+                  <Chip key={value} label={COLORS.find((color) => color.value == value)?.label} />
+                ))}
+              </Box>
+            )}
+          >
+            {COLORS.map((color) => (
+              <MenuItem key={color.value} value={color.value}>
+                {color.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+      <Box sx={{ display: "flex", gap: 1.5 }}>
+        {/* Buttons */}
+        <Button variant="contained" onClick={handleApply}>
+          Aplicar
+        </Button>
 
-      <FormControl sx={{ minWidth: 200 }} size="small">
-        <InputLabel>Cores</InputLabel>
-        <Select
-          multiple
-          value={colors}
-          onChange={(e) => setColors(e.target.value as string[])}
-          input={<OutlinedInput label="Cores" />}
-          renderValue={(selected) => (
-            <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-              {(selected as string[]).map((value) => (
-                <Chip key={value} label={COLORS.find((color) => color.value == value)?.label} />
-              ))}
-            </Box>
-          )}
-        >
-          {COLORS.map((color) => (
-            <MenuItem key={color.value} value={color.value}>
-              {color.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {/* Buttons */}
-      <Button variant="contained" onClick={handleApply}>
-        Apply
-      </Button>
-
-      <Button variant="outlined" onClick={handleClear}>
-        Clear
-      </Button>
+        <Button variant="outlined" onClick={handleClear}>
+          Limpar
+        </Button>
+      </Box>
     </Paper>
   );
 }
