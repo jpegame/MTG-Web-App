@@ -1,6 +1,7 @@
 import express from "express";
 import { AppDataSource } from "./dataSource";
 import abilityRoutes from "./routes/ability.routes";
+import userRoutes from "./routes/user.routes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use("/ability", abilityRoutes);
+app.use("/user", userRoutes);
 
 AppDataSource.initialize()
   .then(() => {
