@@ -1,9 +1,13 @@
 import express from "express";
+import { createServer } from "http";
 import { AppDataSource } from "./dataSource";
+import { initSocket } from "./socket";
+
 import abilityRoutes from "./routes/ability.routes";
 import userRoutes from "./routes/user.routes";
 
 const app = express();
+const httpServer = createServer(app);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
@@ -26,7 +30,8 @@ AppDataSource.initialize()
   .then(() => {
     console.log("Database connected");
 
-    app.listen(3000, () => {
+    initSocket(httpServer);
+    httpServer.listen(3000, () => {
       console.log("Server running on http://localhost:3000");
     });
   })
